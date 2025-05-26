@@ -274,4 +274,26 @@ Poisson Distribution
 */
 double *amath_pdist(int *data, double lambda, size_t n_elements, size_t n_threads);
 
+/*
+----------------------------------------------------------------------------------
+Dot Product
+*/
+
+/*
+ Calculates the dot product of two same-sized vectors. Returns the double value, or NAN
+ on error.
+*/
+double amath_dprod(double* restrict vector1, double* restrict vector2, size_t n_elements);
+
+/*
+----------------------------------------------------------------------------------
+Cross Product
+*/
+
+/*
+ Calculates the cross product of two same-sized vectors. Returns a new array with
+ the resultant vector, or NAN on error. DOn't forget to free the memory of the result.
+*/
+double* amath_cprod(double* restrict vector1, double* restrict vector2, size_t n_elements);
+
 #endif  // __ADVANCED_MATH_LIB
