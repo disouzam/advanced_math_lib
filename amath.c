@@ -14,6 +14,71 @@
 #define BUFFER_SIZE 120
 #define DATA_CAPACITY 10000
 
+typedef void (*math_handler_t)(double* data, size_t count);
+
+typedef struct {
+  const char* name;
+  math_handler_t handler;
+} Command;
+
+static void handle_mean(double* data, size_t count) {
+  printf("%lf\n", amath_mean(data, count));
+}
+
+static void handle_median(double* data, size_t count) {
+  printf("%lf\n", amath_median(data, count, 0));
+}
+
+static void handle_stdev(double* data, size_t count) {
+  printf("%lf\n", amath_stdev(data, 1, count));
+}
+
+static void handle_ndist(double* data, size_t count) {
+  double* dist = amath_ndist(data, count, 4);
+  for (size_t i = 0; i < count; i++) printf("%lf\n", dist[i]);
+  free(dist);
+}
+
+static void handle_min(double* data, size_t count) {
+  printf("%lf\n", amath_min(data, count));
+}
+
+static void handle_max(double* data, size_t count) {
+  printf("%lf\n", amath_max(data, count));
+}
+
+static void handle_range(double* data, size_t count) {
+  printf("%lf\n", amath_range(data, count));
+}
+
+static void handle_normalize(double* data, size_t count) {
+  amath_normalize(data, count);
+  for (size_t i = 0; i < count; i++) printf("%lf\n", data[i]);
+}
+
+static void handle_zscore(double* data, size_t count) {
+  double* zscore = amath_zscore(data, count);
+  for (size_t i = 0; i < count; i++) printf("%lf\n", zscore[i]);
+  free(zscore);
+}
+
+static void handle_variance(double* data, size_t count) {
+  printf("%lf\n", amath_variance(data, count));
+}
+
+static const Command commands[] = {
+  {"max", handle_max},
+  {"mean", handle_mean},
+  {"median", handle_median},
+  {"min", handle_min},
+  {"ndist", handle_ndist},
+  {"normalize", handle_normalize},
+  {"range", handle_range},
+  {"stdev", handle_stdev},
+  {"variance", handle_variance},
+  {"zscore", handle_zscore}
+};
+
 static double* store_data(size_t* count) {
   char buffer[BUFFER_SIZE];
   int realloc_count = 1;
@@ -40,40 +105,19 @@ static double* store_data(size_t* count) {
 }
 
 static int transform(double* data, size_t* count, char* func) {
-
-  if (strcmp(func, "mean") == 0) {
-    printf("%lf\n", amath_mean(data, *count));
-  } else if (strcmp(func, "median") == 0) {
-    printf("%lf\n", amath_median(data, *count, 0));
-  } else if (strcmp(func, "stdev") == 0) {
-    printf("%lf\n", amath_stdev(data, 1, *count));
-  } else if (strcmp(func, "ndist") == 0) {
-    double* dist = amath_ndist(data, *count, 4);
-    for (size_t i = 0; i < *count; i++) printf("%lf\n", dist[i]);
-    free(dist);
-  } else if (strcmp(func, "min") == 0) {
-    printf("%lf\n", amath_min(data, *count));
-  } else if (strcmp(func, "max") == 0) {
-    printf("%lf\n", amath_max(data, *count));
-  } else if (strcmp(func, "range") == 0) {
-    printf("%lf\n", amath_range(data, *count));
-  } else if (strcmp(func, "normalize") == 0) {
-    amath_normalize(data, *count);
-    for (size_t i = 0; i < *count; i++) printf("%lf\n", data[i]);
-  } else if (strcmp(func, "zscore") == 0) {
-    double* zscore = amath_zscore(data, *count);
-    for (size_t i = 0; i < *count; i++) printf("%lf\n", zscore[i]);
-    free(zscore);
-  } else if (strcmp(func, "variance") == 0 ) {
-    printf("%lf\n", amath_variance(data, *count));
-  } else {
-    fprintf(stderr, "Unknown option: %s\n", func);
-    free(data);
-    return EXIT_FAILURE;
+  size_t num_commands = sizeof(commands) / sizeof(commands[0]);
+  
+  for (size_t i = 0; i < num_commands; i++) {
+    if (strcmp(func, commands[i].name) == 0) {
+      commands[i].handler(data, *count);
+      free(data);
+      return EXIT_SUCCESS;
+    }
   }
-
+  
+  fprintf(stderr, "Unknown option: %s\n", func);
   free(data);
-  return EXIT_SUCCESS;
+  return EXIT_FAILURE;
 }
 
 int main(int argc, char** argv) {
@@ -90,4 +134,3 @@ int main(int argc, char** argv) {
   double* data = store_data(&count);
   return transform(data, &count, argv[1]);
 }
-
