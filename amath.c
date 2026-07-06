@@ -105,7 +105,7 @@ static double* store_data(size_t* count) {
 
 static int transform(double* data, size_t* count, char* func) {
   size_t num_commands = sizeof(commands) / sizeof(commands[0]);
-  
+
   for (size_t i = 0; i < num_commands; i++) {
     if (strcmp(func, commands[i].name) == 0) {
       commands[i].handler(data, *count);
@@ -113,7 +113,7 @@ static int transform(double* data, size_t* count, char* func) {
       return EXIT_SUCCESS;
     }
   }
-  
+
   fprintf(stderr, "Unknown option: %s\n", func);
   free(data);
   return EXIT_FAILURE;

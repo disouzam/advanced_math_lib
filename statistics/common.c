@@ -37,7 +37,7 @@ double amath_median(double* restrict data, size_t n_elements, unsigned int sorte
 double amath_stdev(double* restrict data, unsigned int population, size_t n_elements) {
   if (data == NULL || n_elements == 0) return NAN;
   int bessel_correction = population ? 0 : 1;
-  
+
   double data_mean = amath_mean(data, n_elements), square_sigma = 0;
   for (size_t i = 0; i < n_elements; i++) {
     square_sigma += pow(data[i] - data_mean, 2);
@@ -110,16 +110,16 @@ double amath_pcorr(double* restrict data, double* restrict other, size_t n_eleme
 
 double* amath_zscore(double* restrict data, size_t n_elements) {
   if (data == NULL || n_elements < 1) return NULL;
-  
+
   double stdev = amath_stdev(data, 1, n_elements);
   if (isnan(stdev)) return NULL;
-  
+
   double mean = amath_mean(data, n_elements);
   if (isnan(mean)) return NULL;
 
   double* zscore = malloc(sizeof(double) * n_elements);
   if (zscore == NULL) return NULL;
-  
+
   for (size_t i = 0; i < n_elements; i++) {
     zscore[i] = (data[i] - mean) / stdev;
   }

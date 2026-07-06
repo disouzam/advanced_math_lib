@@ -44,7 +44,7 @@ double *amath_ndist(double *data, size_t n_elements, size_t n_threads) {
   double deviation = amath_stdev(data, 1, n_elements);
   double normalization_factor = 1 / sqrt(2 * M_PI * pow(deviation, 2));
   double squared_dev = pow(deviation, 2);
-  
+
   size_t num_threads = n_threads <= n_elements ? n_threads : n_elements;
 
   pthread_t threads[num_threads];
